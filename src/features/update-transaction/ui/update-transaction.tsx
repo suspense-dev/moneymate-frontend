@@ -28,26 +28,28 @@ type Props = {
 export const UpdateTransaction = ({ children }: Props) => {
   const [isNumpadVisible, setIsNumpadVisible] = useState(false);
   const [txnId, setTxnId] = useState<string>('');
-  const [sourceFrom, setSourceFrom] = useState<NumpadSource | null>(null);
-  const [sourceTo, setSourceTo] = useState<NumpadSource | null>(null);
+  const [sourceFrom, setSourceFrom] = useState<NumpadSource>();
+  const [sourceTo, setSourceTo] = useState<NumpadSource>();
   const [presetAmount, setPresetAmount] = useState<MoneyVO>(MoneyVO.fromZero());
 
   const init = useCallback<UpdateTransactionFunction>((txnId) => {
     const txn = TransactionModel.get(txnId);
 
     if (txn) {
-      const sourceFrom: NumpadSource = {
-        id: txn.from.id,
-        name: txn.from.name,
-        currency: txn.from.balance.currency,
-      };
       const sourceTo: NumpadSource = {
         id: txn.to.id,
         name: txn.to.name,
         currency: txn.to.balance.currency,
       };
 
-      setSourceFrom(sourceFrom);
+      if (txn.from) {
+        setSourceFrom({
+          id: txn.from.id,
+          name: txn.from.name,
+          currency: txn.from.balance.currency,
+        });
+      }
+
       setSourceTo(sourceTo);
       setPresetAmount(txn.amount);
       setTxnId(txn.id);
@@ -56,31 +58,48 @@ export const UpdateTransaction = ({ children }: Props) => {
   }, []);
 
   const handleSumbit = ({ from, to, amount }: NumpadSubmitParams) => {
-    const sourceFrom = ExpenseSourceModel.get(from.id) || IncomeSourceModel.get(from.id);
     const sourceTo = ExpenseSourceModel.get(to.id) || IncomeSourceModel.get(to.id);
 
-    if (sourceFrom && sourceTo) {
-      // update transaction
-      TransactionModel.update({
-        id: txnId,
-        from: sourceFrom,
-        to: sourceTo,
-        amount,
-      });
+    if (sourceTo) {
+      if (!from) {
+        // income
+        TransactionModel.update({
+          id: txnId,
+          to: sourceTo,
+          amount,
+        });
 
-      // update balance of "from" source
-      IncomeSourceModel.update({
-        id: sourceFrom.id,
-        balance: sourceFrom.balance.plus(presetAmount.value).minus(amount.value),
-      });
+        IncomeSourceModel.update({
+          ...sourceTo,
+          balance: sourceTo.balance.minus(presetAmount.value).plus(amount.value),
+        });
 
-      // update balance of "to" source
-      (IncomeSourceModel.isIncomeSource(sourceTo.id) ? IncomeSourceModel : ExpenseSourceModel).update({
-        id: sourceTo.id,
-        balance: sourceTo.balance.minus(presetAmount.value).plus(amount.value),
-      });
+        setIsNumpadVisible(false);
+      } else {
+        // expense
+        const sourceFrom = ExpenseSourceModel.get(from.id) || IncomeSourceModel.get(from.id);
 
-      setIsNumpadVisible(false);
+        if (sourceFrom) {
+          TransactionModel.update({
+            id: txnId,
+            from: sourceFrom,
+            to: sourceTo,
+            amount,
+          });
+
+          IncomeSourceModel.update({
+            ...sourceFrom,
+            balance: sourceFrom.balance.plus(presetAmount.value).minus(amount.value),
+          });
+
+          ExpenseSourceModel.update({
+            id: sourceTo.id,
+            balance: sourceTo.balance.minus(presetAmount.value).plus(amount.value),
+          });
+
+          setIsNumpadVisible(false);
+        }
+      }
     }
   };
 
@@ -89,13 +108,13 @@ export const UpdateTransaction = ({ children }: Props) => {
   };
 
   const handleLeave = () => {
-    setSourceFrom(null);
-    setSourceTo(null);
+    setSourceFrom(undefined);
+    setSourceTo(undefined);
   };
 
   return (
     <AddTransactionContext.Provider value={init}>
-      {sourceFrom && sourceTo && (
+      {sourceTo && (
         <Numpad
           isVisible={isNumpadVisible}
           from={sourceFrom}

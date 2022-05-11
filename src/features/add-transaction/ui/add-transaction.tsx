@@ -29,7 +29,7 @@ type Props = {
 export const AddTransaction = ({ children }: Props) => {
   const [isNumpadVisible, setIsNumpadVisible] = useState(false);
   const [sourceFrom, setSourceFrom] = useState<NumpadSource>();
-  const [sourceTo, setSourceTo] = useState<NumpadSource | null>(null);
+  const [sourceTo, setSourceTo] = useState<NumpadSource>();
 
   const init = useCallback<AddTransactionFunction>(({ from, to }) => {
     const sourceTo: NumpadSource = {
@@ -95,8 +95,8 @@ export const AddTransaction = ({ children }: Props) => {
   };
 
   const handleLeave = () => {
-    setSourceFrom(null);
-    setSourceTo(null);
+    setSourceFrom(undefined);
+    setSourceTo(undefined);
   };
 
   return (
