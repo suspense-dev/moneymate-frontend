@@ -9,7 +9,7 @@ import { TransactionType, Transaction } from '../model';
 
 type Props = {
   style?: Record<string, string>;
-  from: string;
+  from?: string;
   to: string;
   amount: MoneyVO;
   type: Transaction['type'];
@@ -33,7 +33,7 @@ export const TransactionView = ({
   <TouchableWithoutFeedback onPress={onPress ? () => onPress() : undefined}>
     <StyledRoot style={style}>
       <StyledSources>
-        <StyledFrom>From: {from}</StyledFrom>
+        {from && <StyledFrom>From: {from}</StyledFrom>}
         <Text>To: {to}</Text>
       </StyledSources>
       <StyledTotal>

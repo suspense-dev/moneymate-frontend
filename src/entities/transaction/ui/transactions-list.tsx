@@ -23,7 +23,7 @@ export const TransactionsList = observer(({ style, onPress }: Props) => (
       return (
         <StyledTransactionView
           key={txn.id}
-          from={txn.from.name}
+          from={txn.from?.name}
           to={txn.to.name}
           amount={txn.amount}
           type={txn.type}

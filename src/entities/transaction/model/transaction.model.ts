@@ -4,7 +4,7 @@ import { nanoid } from 'nanoid/non-secure';
 import { Transaction, TransactionIncome, TransactionExpense, TransactionType } from './transaction.types';
 
 type AddExpensePayload = Pick<Transaction, 'from' | 'to' | 'amount'>;
-type AddIncomePayload = Pick<Transaction, 'from' | 'to' | 'amount'>;
+type AddIncomePayload = Pick<Transaction, 'to' | 'amount'>;
 type ChangeIncomeTxnParams = Pick<Transaction, 'id' | 'from' | 'to' | 'amount'>;
 
 class _TransactionModel {
@@ -39,11 +39,10 @@ class _TransactionModel {
     });
   };
 
-  addIncome = ({ from, to, amount }: AddIncomePayload): void => {
+  addIncome = ({ to, amount }: AddIncomePayload): void => {
     this.income.push({
       id: nanoid(),
       createdAt: new Date().toISOString(),
-      from,
       to,
       amount,
       type: TransactionType.Income,

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components/native';
 import { TouchableWithoutFeedback } from 'react-native';
 import { observer } from 'mobx-react';
@@ -16,14 +16,14 @@ export type NumpadSource = {
 };
 
 export type NumpadSubmitParams = {
-  from: NumpadSource;
+  from?: NumpadSource;
   to: NumpadSource;
   amount: MoneyVO;
 };
 
 type Props = {
   isVisible: boolean;
-  from: NumpadSource;
+  from?: NumpadSource;
   to: NumpadSource;
   amount?: MoneyVO;
 
@@ -34,82 +34,83 @@ type Props = {
 
 const INITIAL_INPUT_VALUE = '0';
 
-export const Numpad = observer(({ isVisible, from, to, amount, onSubmit, onClose, onLeave }: Props) => {
-  const [inputValue, setInputValue] = React.useState<string>(
-    amount !== undefined ? amount.value.toString() : INITIAL_INPUT_VALUE,
-  );
-  const inputValueAsNumber = parseFloat(inputValue);
-  const isSubmitDisabled = inputValueAsNumber <= 0;
+export const Numpad = observer(
+  ({ isVisible, from, to, amount = MoneyVO.fromZero(), onSubmit, onClose, onLeave }: Props) => {
+    const [inputCurrency] = useState<CurrencyVO>(amount.currency);
+    const [inputValue, setInputValue] = useState<string>(amount.value.toString());
+    const inputValueAsNumber = parseFloat(inputValue);
+    const isSubmitDisabled = inputValueAsNumber <= 0;
 
-  const handlePressKey = (value: string): void => {
-    const regExp = /^(\d*\.{0,1}\d{0,18}$)/;
+    const handlePressKey = (value: string): void => {
+      const regExp = /^(\d*\.{0,1}\d{0,18}$)/;
 
-    if (regExp.exec(value)) {
-      setInputValue(inputValue === INITIAL_INPUT_VALUE ? value : inputValue + value);
-    }
-  };
+      if (regExp.exec(value)) {
+        setInputValue(inputValue === INITIAL_INPUT_VALUE ? value : inputValue + value);
+      }
+    };
 
-  const handlePressRemove = (): void => {
-    const newInputValue = inputValue.slice(0, inputValue.length - 1);
+    const handlePressRemove = (): void => {
+      const newInputValue = inputValue.slice(0, inputValue.length - 1);
 
-    if (newInputValue.length) {
-      setInputValue(newInputValue);
-    } else {
+      if (newInputValue.length) {
+        setInputValue(newInputValue);
+      } else {
+        setInputValue(INITIAL_INPUT_VALUE);
+      }
+    };
+
+    const handleLongPressRemove = () => {
+      if (inputValue !== INITIAL_INPUT_VALUE) {
+        Vibration.light();
+      }
+
       setInputValue(INITIAL_INPUT_VALUE);
-    }
-  };
+    };
 
-  const handleLongPressRemove = () => {
-    if (inputValue !== INITIAL_INPUT_VALUE) {
-      Vibration.light();
-    }
+    const handleLeave = () => {
+      setInputValue(INITIAL_INPUT_VALUE);
+      onLeave?.();
+    };
 
-    setInputValue(INITIAL_INPUT_VALUE);
-  };
+    const handleSubmit = () => {
+      onSubmit({
+        from,
+        to,
+        amount: new MoneyVO(inputValueAsNumber, inputCurrency.code),
+      });
+      Vibration.success();
+    };
 
-  const handleLeave = () => {
-    setInputValue(INITIAL_INPUT_VALUE);
-    onLeave?.();
-  };
+    return (
+      <Portal>
+        <StyledAnimationFade isVisible={isVisible} onLeave={handleLeave}>
+          <TouchableWithoutFeedback onPress={onClose}>
+            <StyledBackground />
+          </TouchableWithoutFeedback>
 
-  const handleSubmit = () => {
-    onSubmit({
-      from,
-      to,
-      amount: new MoneyVO(inputValueAsNumber, from.currency.code),
-    });
-    Vibration.success();
-  };
+          <StyledAnimatedRoot isVisible={isVisible} movement="toTop">
+            <StyledSourcesWrapper>
+              {from && <StyledMoneySource name={from.name} />}
+              <StyledMoneySource name={to.name} />
+            </StyledSourcesWrapper>
 
-  return (
-    <Portal>
-      <StyledAnimationFade isVisible={isVisible} onLeave={handleLeave}>
-        <TouchableWithoutFeedback onPress={onClose}>
-          <StyledBackground />
-        </TouchableWithoutFeedback>
+            <NumpadOutput value={`${inputValue} ${inputCurrency.sign}`} />
 
-        <StyledAnimatedRoot isVisible={isVisible} movement="toTop">
-          <StyledSourcesWrapper>
-            <StyledMoneySource name={from.name} />
-            <StyledMoneySource name={to.name} />
-          </StyledSourcesWrapper>
-
-          <NumpadOutput value={`${inputValue} ${from.currency.sign}`} />
-
-          <StyledNumpadControlsWrapper>
-            <StyledNumpadKeys onPress={handlePressKey} />
-            <StyledNumpadControls
-              onRemove={handlePressRemove}
-              onLongRemove={handleLongPressRemove}
-              isSubmitDisabled={isSubmitDisabled}
-              onSubmit={handleSubmit}
-            />
-          </StyledNumpadControlsWrapper>
-        </StyledAnimatedRoot>
-      </StyledAnimationFade>
-    </Portal>
-  );
-});
+            <StyledNumpadControlsWrapper>
+              <StyledNumpadKeys onPress={handlePressKey} />
+              <StyledNumpadControls
+                onRemove={handlePressRemove}
+                onLongRemove={handleLongPressRemove}
+                isSubmitDisabled={isSubmitDisabled}
+                onSubmit={handleSubmit}
+              />
+            </StyledNumpadControlsWrapper>
+          </StyledAnimatedRoot>
+        </StyledAnimationFade>
+      </Portal>
+    );
+  },
+);
 
 const StyledAnimationFade = styled(AnimationFade)`
   position: absolute;
@@ -126,7 +127,7 @@ const StyledSourcesWrapper = styled.View`
 `;
 
 const StyledMoneySource = styled(NumpadSourceView)`
-  flex-basis: 50%;
+  flex-grow: 1;
   border-bottom-width: 1px;
   border-bottom-color: #ccc;
 `;

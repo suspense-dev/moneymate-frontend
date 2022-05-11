@@ -9,7 +9,7 @@ export enum TransactionType {
 
 export type Transaction = {
   id: string;
-  from: IncomeSource | ExpenseSource;
+  from?: IncomeSource | ExpenseSource;
   to: IncomeSource | ExpenseSource;
   type: TransactionType;
   amount: MoneyVO;

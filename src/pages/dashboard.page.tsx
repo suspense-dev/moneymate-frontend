@@ -3,7 +3,7 @@ import styled from 'styled-components/native';
 
 import { RootTemplate, Head } from '@/shared/ui';
 import { Header } from '@/widgets';
-import { IncomeSourceModel, IncomeSourcesList } from '@/entities/income-source';
+import { IncomeSource, IncomeSourceModel, IncomeSourcesList } from '@/entities/income-source';
 import { ExpenseSource, ExpenseSourcesList } from '@/entities/expense-source';
 import { AddIncomeModal } from '@/features/add-income-source';
 import { AddExpenseModal } from '@/features/add-expense-source';
@@ -13,6 +13,14 @@ const DashboardPageView = () => {
   const [isAddIncomeSourceModalVisible, setIsAddIncomeSourceModalVisible] = useState(false);
   const [isAddExpenseSourceModalVisible, setIsAddExpenseSourceModalVisible] = useState(false);
   const addTransaction = useAddTransaction();
+
+  const handlePressIncome = (incomeSource: IncomeSource) => {
+    if (incomeSource) {
+      addTransaction({
+        to: incomeSource,
+      });
+    }
+  };
 
   const handlePressExpense = (expenseSource: ExpenseSource) => {
     const incomeSource = IncomeSourceModel.getDefault();
@@ -30,9 +38,7 @@ const DashboardPageView = () => {
       <RootTemplate header={<Header />}>
         <StyledHead>Income sources</StyledHead>
         <StyledIncomeSourcesList
-          onPress={() => {
-            console.log('press');
-          }}
+          onPress={handlePressIncome}
           onPressAdd={() => setIsAddIncomeSourceModalVisible(true)}
         />
 
