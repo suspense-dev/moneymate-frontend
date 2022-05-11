@@ -1,0 +1,16 @@
+{
+  "expo": {
+    "name": "MoneyMate",
+    "icon": "./public/sample-icon.png",
+    "version": "1.0.0",
+    "slug": "moneymate",
+    "ios": {
+      "bundleIdentifier": "com.alex.moneymate",
+      "buildNumber": "1.0.0"
+    },
+    "android": {
+      "package": "com.alex.moneymate",
+      "versionCode": 1
+    }
+  }
+}
