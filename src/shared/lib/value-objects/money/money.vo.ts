@@ -52,4 +52,20 @@ export class MoneyVO implements ValueObject {
   divide(value: number | string | BigNumber): MoneyVO {
     return new MoneyVO(this.value.dividedBy(new BigNumber(value)), this.currency.code);
   }
+
+  getPercent(percent: number): number {
+    return new BigNumber(percent).dividedBy(100).multipliedBy(this.value).toNumber();
+  }
+
+  plusPercent(percent: number): MoneyVO {
+    const newValue = this.getPercent(percent);
+
+    return new MoneyVO(this.value.plus(newValue), this.currency.code);
+  }
+
+  minusPercent(percent: number): MoneyVO {
+    const newValue = this.getPercent(percent);
+
+    return new MoneyVO(this.value.minus(newValue), this.currency.code);
+  }
 }
