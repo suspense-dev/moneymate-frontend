@@ -1,1 +1,1 @@
-export * from './add-transaction';
+export * from './add-transaction-provider';

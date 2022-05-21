@@ -1,7 +1,7 @@
 import { BigNumber } from 'bignumber.js';
 
 import { ValueObject } from '../value-object.types';
-import { CurrencyVO, DEFAULT_CURRENCY_CODE } from '../currency/currency.vo';
+import { CurrencyVO } from '../currency/currency.vo';
 import { CurrencyCode } from '../currency';
 
 export class MoneyVO implements ValueObject {
@@ -13,8 +13,8 @@ export class MoneyVO implements ValueObject {
     this.currency = new CurrencyVO(currencyCode);
   }
 
-  static fromZero(currencyCode?: CurrencyCode): MoneyVO {
-    return new MoneyVO(0, currencyCode ?? DEFAULT_CURRENCY_CODE);
+  static fromZero(currencyCode: CurrencyCode): MoneyVO {
+    return new MoneyVO(0, currencyCode);
   }
 
   get isNegative(): boolean {

@@ -1,6 +1,10 @@
 import { makeObservable, observable } from 'mobx';
 
-import { DEFAULT_CURRENCY_CODE, DEFAULT_CURRENCY_NAME, DEFAULT_CURRENCY_SIGN } from '@/app/constants';
+import { CurrencyCode, CurrencyName, CurrencySign } from '@/shared/lib';
+
+const DEFAULT_CURRENCY_CODE = CurrencyCode.USD;
+const DEFAULT_CURRENCY_NAME = CurrencyName.USD;
+const DEFAULT_CURRENCY_SIGN = CurrencySign.USD;
 
 class UserModel {
   constructor() {

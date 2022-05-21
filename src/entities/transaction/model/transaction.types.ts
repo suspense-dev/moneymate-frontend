@@ -13,7 +13,7 @@ export type Transaction = {
   to: IncomeSource | ExpenseSource;
   type: TransactionType;
   amount: MoneyVO;
-  createdAt: string;
+  createdAt: number;
 };
 
 export type TransactionIncome = Transaction & {

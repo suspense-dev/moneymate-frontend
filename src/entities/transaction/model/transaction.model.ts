@@ -31,7 +31,7 @@ class _TransactionModel {
   addExpense = ({ from, to, amount }: AddExpensePayload): void => {
     this.expense.push({
       id: nanoid(),
-      createdAt: new Date().toISOString(),
+      createdAt: new Date().getTime(),
       from,
       to,
       amount,
@@ -42,7 +42,7 @@ class _TransactionModel {
   addIncome = ({ to, amount }: AddIncomePayload): void => {
     this.income.push({
       id: nanoid(),
-      createdAt: new Date().toISOString(),
+      createdAt: new Date().getTime(),
       to,
       amount,
       type: TransactionType.Income,

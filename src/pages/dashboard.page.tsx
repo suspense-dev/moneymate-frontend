@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import styled from 'styled-components/native';
 
-import { RootTemplate, Head } from '@/shared/ui';
+import { RootTemplate, Head, SlotAdd, Slot } from '@/shared/ui';
 import { Header } from '@/widgets';
-import { IncomeSource, IncomeSourceModel, IncomeSourcesList } from '@/entities/income-source';
-import { ExpenseSource, ExpenseSourcesList } from '@/entities/expense-source';
+import { IncomeSource, IncomeSourceModel } from '@/entities/income-source';
+import { ExpenseSource, ExpenseSourceModel } from '@/entities/expense-source';
 import { AddIncomeModal } from '@/features/add-income-source';
 import { AddExpenseModal } from '@/features/add-expense-source';
-import { AddTransaction, useAddTransaction } from '@/features/add-transaction';
+import { AddTransactionProvider, useAddTransaction } from '@/features/add-transaction';
 
 const DashboardPageView = () => {
   const [isAddIncomeSourceModalVisible, setIsAddIncomeSourceModalVisible] = useState(false);
@@ -37,13 +37,30 @@ const DashboardPageView = () => {
     <>
       <RootTemplate header={<Header />}>
         <StyledHead>Income sources</StyledHead>
-        <StyledIncomeSourcesList
-          onPress={handlePressIncome}
-          onPressAdd={() => setIsAddIncomeSourceModalVisible(true)}
-        />
+        <StyledIncomeSourcesContainer>
+          {IncomeSourceModel.all.map((source) => (
+            <StyledExpenseSource
+              key={source.id}
+              title={source.name}
+              balance={source.balance}
+              onPress={() => handlePressIncome(source)}
+            />
+          ))}
+          <StyledSlotAdd onPress={() => setIsAddIncomeSourceModalVisible(true)} />
+        </StyledIncomeSourcesContainer>
 
         <StyledHead>Expenses sources</StyledHead>
-        <ExpenseSourcesList onPress={handlePressExpense} onPressAdd={() => setIsAddExpenseSourceModalVisible(true)} />
+        <StyledExpenseSourcesContainer>
+          {ExpenseSourceModel.all.map((source) => (
+            <StyledExpenseSource
+              key={source.id}
+              title={source.name}
+              balance={source.balance}
+              onPress={() => handlePressExpense(source)}
+            />
+          ))}
+          <StyledSlotAdd onPress={() => setIsAddExpenseSourceModalVisible(true)} />
+        </StyledExpenseSourcesContainer>
       </RootTemplate>
 
       <AddIncomeModal
@@ -60,15 +77,32 @@ const DashboardPageView = () => {
 };
 
 export const DashboardPage = () => (
-  <AddTransaction>
+  <AddTransactionProvider>
     <DashboardPageView />
-  </AddTransaction>
+  </AddTransactionProvider>
 );
 
 const StyledHead = styled(Head)`
   margin-bottom: 12px;
 `;
 
-const StyledIncomeSourcesList = styled(IncomeSourcesList)`
+const StyledIncomeSourcesContainer = styled.View`
+  display: flex;
+  flex-flow: row wrap;
   margin-bottom: 20px;
+`;
+
+const StyledExpenseSourcesContainer = styled.View`
+  display: flex;
+  flex-flow: row wrap;
+`;
+
+const StyledExpenseSource = styled(Slot)`
+  margin: 0 15px 15px 0;
+  width: 70px;
+`;
+
+const StyledSlotAdd = styled(SlotAdd)`
+  margin: 0 15px 15px 0;
+  width: 70px;
 `;

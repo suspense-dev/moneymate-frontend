@@ -1,1 +1,1 @@
-export * from './transactions-list';
+export * from './transaction-view';
