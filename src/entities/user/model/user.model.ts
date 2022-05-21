@@ -6,7 +6,7 @@ const DEFAULT_CURRENCY_CODE = CurrencyCode.USD;
 const DEFAULT_CURRENCY_NAME = CurrencyName.USD;
 const DEFAULT_CURRENCY_SIGN = CurrencySign.USD;
 
-class UserModel {
+class _UserModel {
   constructor() {
     makeObservable(this, {
       defaultCurrency: observable,
@@ -20,4 +20,4 @@ class UserModel {
   };
 }
 
-export const userModel = new UserModel();
+export const UserModel = new _UserModel();

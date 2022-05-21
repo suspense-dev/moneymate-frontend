@@ -3,6 +3,7 @@ import { nanoid } from 'nanoid/non-secure';
 
 import { MoneyVO } from '@/shared/lib';
 import { ExpenseSource } from './expense-source.types';
+import { UserModel } from '../../user';
 
 type UpdateParams = {
   id: string;
@@ -14,19 +15,19 @@ export const INITIAL_EXPENSES_SOURCES: ExpenseSource[] = [
   {
     id: nanoid(),
     name: 'Food',
-    balance: MoneyVO.fromZero(),
+    balance: MoneyVO.fromZero(UserModel.defaultCurrency.code),
     type: 'expense',
   },
   {
     id: nanoid(),
     name: 'Shopping',
-    balance: MoneyVO.fromZero(),
+    balance: MoneyVO.fromZero(UserModel.defaultCurrency.code),
     type: 'expense',
   },
   {
     id: nanoid(),
     name: 'Sport',
-    balance: MoneyVO.fromZero(),
+    balance: MoneyVO.fromZero(UserModel.defaultCurrency.code),
     type: 'expense',
   },
 ];
@@ -47,7 +48,7 @@ class _ExpenseSourceModel {
     this.all.push({
       id: nanoid(),
       name,
-      balance: MoneyVO.fromZero(),
+      balance: MoneyVO.fromZero(UserModel.defaultCurrency.code),
       type: 'expense',
     });
   };

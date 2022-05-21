@@ -8,8 +8,9 @@ import { ExpenseSource, ExpenseSourceModel } from '@/entities/expense-source';
 import { AddIncomeModal } from '@/features/add-income-source';
 import { AddExpenseModal } from '@/features/add-expense-source';
 import { AddTransactionProvider, useAddTransaction } from '@/features/add-transaction';
+import { observer } from 'mobx-react';
 
-const DashboardPageView = () => {
+const DashboardPageView = observer(() => {
   const [isAddIncomeSourceModalVisible, setIsAddIncomeSourceModalVisible] = useState(false);
   const [isAddExpenseSourceModalVisible, setIsAddExpenseSourceModalVisible] = useState(false);
   const addTransaction = useAddTransaction();
@@ -74,7 +75,7 @@ const DashboardPageView = () => {
       />
     </>
   );
-};
+});
 
 export const DashboardPage = () => (
   <AddTransactionProvider>

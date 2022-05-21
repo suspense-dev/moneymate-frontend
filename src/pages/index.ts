@@ -1,2 +1,2 @@
-export * from './dashboard.page';
-export * from './transactions.page';
+export * from './dashboard';
+export * from './transactions';

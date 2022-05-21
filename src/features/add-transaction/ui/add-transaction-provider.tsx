@@ -3,6 +3,8 @@ import { Numpad, NumpadSource, NumpadSubmitParams } from '@/shared/ui';
 import { IncomeSource, IncomeSourceModel } from '@/entities/income-source';
 import { ExpenseSource, ExpenseSourceModel } from '@/entities/expense-source';
 import { TransactionModel } from '@/entities/transaction';
+import { MoneyVO } from '@/shared/lib';
+import { UserModel } from '@/entities/user';
 
 type Source = IncomeSource | ExpenseSource;
 
@@ -30,6 +32,7 @@ export const AddTransactionProvider = ({ children }: Props) => {
   const [isNumpadVisible, setIsNumpadVisible] = useState(false);
   const [sourceFrom, setSourceFrom] = useState<NumpadSource>();
   const [sourceTo, setSourceTo] = useState<NumpadSource>();
+  const [amount] = useState<MoneyVO>(MoneyVO.fromZero(UserModel.defaultCurrency.code));
 
   const init = useCallback<AddTransactionFunction>(({ from, to }) => {
     const sourceTo: NumpadSource = {
@@ -106,6 +109,7 @@ export const AddTransactionProvider = ({ children }: Props) => {
           isVisible={isNumpadVisible}
           from={sourceFrom}
           to={sourceTo}
+          amount={amount}
           onSubmit={handleSumbit}
           onClose={handleClose}
           onLeave={handleLeave}

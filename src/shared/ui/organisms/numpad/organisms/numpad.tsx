@@ -25,7 +25,7 @@ type Props = {
   isVisible: boolean;
   from?: NumpadSource;
   to: NumpadSource;
-  amount?: MoneyVO;
+  amount: MoneyVO;
 
   onSubmit: (data: NumpadSubmitParams) => Promise<void> | void;
   onClose?: () => void;
@@ -34,83 +34,81 @@ type Props = {
 
 const INITIAL_INPUT_VALUE = '0';
 
-export const Numpad = observer(
-  ({ isVisible, from, to, amount = MoneyVO.fromZero(), onSubmit, onClose, onLeave }: Props) => {
-    const [inputCurrency] = useState<CurrencyVO>(amount.currency);
-    const [inputValue, setInputValue] = useState<string>(amount.value.toString());
-    const inputValueAsNumber = parseFloat(inputValue);
-    const isSubmitDisabled = inputValueAsNumber <= 0;
+export const Numpad = observer(({ isVisible, from, to, amount, onSubmit, onClose, onLeave }: Props) => {
+  const [inputCurrency] = useState<CurrencyVO>(amount.currency);
+  const [inputValue, setInputValue] = useState<string>(amount.value.toString());
+  const inputValueAsNumber = parseFloat(inputValue);
+  const isSubmitDisabled = inputValueAsNumber <= 0;
 
-    const handlePressKey = (value: string): void => {
-      const regExp = /^(\d*\.{0,1}\d{0,18}$)/;
+  const handlePressKey = (value: string): void => {
+    const regExp = /^(\d*\.{0,1}\d{0,18}$)/;
 
-      if (regExp.exec(value)) {
-        setInputValue(inputValue === INITIAL_INPUT_VALUE ? value : inputValue + value);
-      }
-    };
+    if (regExp.exec(value)) {
+      setInputValue(inputValue === INITIAL_INPUT_VALUE ? value : inputValue + value);
+    }
+  };
 
-    const handlePressRemove = (): void => {
-      const newInputValue = inputValue.slice(0, inputValue.length - 1);
+  const handlePressRemove = (): void => {
+    const newInputValue = inputValue.slice(0, inputValue.length - 1);
 
-      if (newInputValue.length) {
-        setInputValue(newInputValue);
-      } else {
-        setInputValue(INITIAL_INPUT_VALUE);
-      }
-    };
-
-    const handleLongPressRemove = () => {
-      if (inputValue !== INITIAL_INPUT_VALUE) {
-        Vibration.light();
-      }
-
+    if (newInputValue.length) {
+      setInputValue(newInputValue);
+    } else {
       setInputValue(INITIAL_INPUT_VALUE);
-    };
+    }
+  };
 
-    const handleLeave = () => {
-      setInputValue(INITIAL_INPUT_VALUE);
-      onLeave?.();
-    };
+  const handleLongPressRemove = () => {
+    if (inputValue !== INITIAL_INPUT_VALUE) {
+      Vibration.light();
+    }
 
-    const handleSubmit = () => {
-      onSubmit({
-        from,
-        to,
-        amount: new MoneyVO(inputValueAsNumber, inputCurrency.code),
-      });
-      Vibration.success();
-    };
+    setInputValue(INITIAL_INPUT_VALUE);
+  };
 
-    return (
-      <Portal>
-        <StyledAnimationFade isVisible={isVisible} onLeave={handleLeave}>
-          <TouchableWithoutFeedback onPress={onClose}>
-            <StyledBackground />
-          </TouchableWithoutFeedback>
+  const handleLeave = () => {
+    setInputValue(INITIAL_INPUT_VALUE);
+    onLeave?.();
+  };
 
-          <StyledAnimatedRoot isVisible={isVisible} movement="toTop">
-            <StyledSourcesWrapper>
-              {from && <StyledMoneySource name={from.name} />}
-              <StyledMoneySource name={to.name} />
-            </StyledSourcesWrapper>
+  const handleSubmit = () => {
+    onSubmit({
+      from,
+      to,
+      amount: new MoneyVO(inputValueAsNumber, inputCurrency.code),
+    });
+    Vibration.success();
+  };
 
-            <NumpadOutput value={`${inputValue} ${inputCurrency.sign}`} />
+  return (
+    <Portal>
+      <StyledAnimationFade isVisible={isVisible} onLeave={handleLeave}>
+        <TouchableWithoutFeedback onPress={onClose}>
+          <StyledBackground />
+        </TouchableWithoutFeedback>
 
-            <StyledNumpadControlsWrapper>
-              <StyledNumpadKeys onPress={handlePressKey} />
-              <StyledNumpadControls
-                onRemove={handlePressRemove}
-                onLongRemove={handleLongPressRemove}
-                isSubmitDisabled={isSubmitDisabled}
-                onSubmit={handleSubmit}
-              />
-            </StyledNumpadControlsWrapper>
-          </StyledAnimatedRoot>
-        </StyledAnimationFade>
-      </Portal>
-    );
-  },
-);
+        <StyledAnimatedRoot isVisible={isVisible} movement="toTop">
+          <StyledSourcesWrapper>
+            {from && <StyledMoneySource name={from.name} />}
+            <StyledMoneySource name={to.name} />
+          </StyledSourcesWrapper>
+
+          <NumpadOutput value={`${inputValue} ${inputCurrency.sign}`} />
+
+          <StyledNumpadControlsWrapper>
+            <StyledNumpadKeys onPress={handlePressKey} />
+            <StyledNumpadControls
+              onRemove={handlePressRemove}
+              onLongRemove={handleLongPressRemove}
+              isSubmitDisabled={isSubmitDisabled}
+              onSubmit={handleSubmit}
+            />
+          </StyledNumpadControlsWrapper>
+        </StyledAnimatedRoot>
+      </StyledAnimationFade>
+    </Portal>
+  );
+});
 
 const StyledAnimationFade = styled(AnimationFade)`
   position: absolute;

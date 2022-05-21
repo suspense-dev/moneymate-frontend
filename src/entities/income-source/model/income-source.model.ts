@@ -3,6 +3,7 @@ import { nanoid } from 'nanoid/non-secure';
 
 import { MoneyVO } from '@/shared/lib';
 import { IncomeSource } from './income-source.types';
+import { UserModel } from '../../user';
 
 type UpdateParams = {
   id: string;
@@ -14,7 +15,7 @@ export const INITIAL_INCOME_SOURCES: IncomeSource[] = [
   {
     id: nanoid(),
     name: 'Salary',
-    balance: MoneyVO.fromZero(),
+    balance: MoneyVO.fromZero(UserModel.defaultCurrency.code),
     isDefault: true,
     type: 'income',
   },
@@ -36,7 +37,7 @@ class _IncomeSourceModel {
     this.all.push({
       id: nanoid(),
       name,
-      balance: MoneyVO.fromZero(),
+      balance: MoneyVO.fromZero(UserModel.defaultCurrency.code),
       isDefault: !this.all.length,
       type: 'income',
     });
