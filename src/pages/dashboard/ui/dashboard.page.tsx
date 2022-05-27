@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components/native';
 
 import { RootTemplate, Head, SlotAdd, Slot } from '@/shared/ui';
-import { Header } from '@/widgets';
+import { Header, Nav } from '@/widgets';
 import { IncomeSource, IncomeSourceModel } from '@/entities/income-source';
 import { ExpenseSource, ExpenseSourceModel } from '@/entities/expense-source';
 import { AddIncomeModal } from '@/features/add-income-source';
@@ -36,7 +36,7 @@ const DashboardPageView = observer(() => {
 
   return (
     <>
-      <RootTemplate header={<Header />}>
+      <RootTemplate header={<Header />} nav={<Nav />}>
         <StyledHead>Income sources</StyledHead>
         <StyledIncomeSourcesContainer>
           {IncomeSourceModel.all.map((source) => (
