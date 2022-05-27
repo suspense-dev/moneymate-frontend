@@ -1,5 +1,5 @@
 import { Platform } from 'react-native';
-import { impactAsync, notificationAsync, ImpactFeedbackStyle, NotificationFeedbackType } from 'expo-haptics';
+import { impactAsync, ImpactFeedbackStyle, notificationAsync, NotificationFeedbackType } from 'expo-haptics';
 
 enum SupportedOS {
   IOS = 'ios',

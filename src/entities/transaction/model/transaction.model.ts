@@ -1,7 +1,7 @@
-import { observable, computed, action, makeObservable } from 'mobx';
+import { action, computed, makeObservable, observable } from 'mobx';
 import { nanoid } from 'nanoid/non-secure';
 
-import { Transaction, TransactionIncome, TransactionExpense, TransactionType } from './transaction.types';
+import { Transaction, TransactionExpense, TransactionIncome, TransactionType } from './transaction.types';
 
 type AddExpensePayload = Pick<Transaction, 'from' | 'to' | 'amount'>;
 type AddIncomePayload = Pick<Transaction, 'to' | 'amount'>;

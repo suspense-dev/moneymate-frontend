@@ -1,8 +1,8 @@
 import React from 'react';
 import styled from 'styled-components/native';
 
-import { Text } from './text';
 import { Block } from './block';
+import { Text } from './text';
 
 interface Props {
   children: React.ReactNode;

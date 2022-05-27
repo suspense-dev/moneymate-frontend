@@ -1,6 +1,6 @@
 import React from 'react';
-import styled from 'styled-components/native';
 import { getStatusBarHeight } from 'react-native-status-bar-height';
+import styled from 'styled-components/native';
 
 interface Props {
   header: React.ReactNode;

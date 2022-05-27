@@ -1,9 +1,10 @@
 import React from 'react';
-import styled from 'styled-components/native';
 import { GestureResponderEvent } from 'react-native';
+import styled from 'styled-components/native';
 
-import { Text } from '@/shared/ui/atoms/text';
 import { MoneyVO } from '@/shared/lib';
+import { Text } from '@/shared/ui/atoms/text';
+
 import { Block } from './block';
 
 interface Props {

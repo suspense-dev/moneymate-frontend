@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import styled from 'styled-components/native';
-
-import { RootTemplate, Head, SlotAdd, Slot } from '@/shared/ui';
-import { Header, Nav } from '@/widgets';
-import { IncomeSource, IncomeSourceModel } from '@/entities/income-source';
-import { ExpenseSource, ExpenseSourceModel } from '@/entities/expense-source';
-import { AddIncomeModal } from '@/features/add-income-source';
-import { AddExpenseModal } from '@/features/add-expense-source';
-import { AddTransactionProvider, useAddTransaction } from '@/features/add-transaction';
 import { observer } from 'mobx-react';
+
+import { ExpenseSource, ExpenseSourceModel } from '@/entities/expense-source';
+import { IncomeSource, IncomeSourceModel } from '@/entities/income-source';
+import { AddExpenseModal } from '@/features/add-expense-source';
+import { AddIncomeModal } from '@/features/add-income-source';
+import { AddTransactionProvider, useAddTransaction } from '@/features/add-transaction';
+import { Head, RootTemplate, Slot, SlotAdd } from '@/shared/ui';
+import { Header, Nav } from '@/widgets';
 
 const DashboardPageView = observer(() => {
   const [isAddIncomeSourceModalVisible, setIsAddIncomeSourceModalVisible] = useState(false);

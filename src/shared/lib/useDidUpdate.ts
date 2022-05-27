@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { useDidMount } from './useDidMount';
 
 type Callback = () => void;

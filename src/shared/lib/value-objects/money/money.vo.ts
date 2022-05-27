@@ -1,8 +1,8 @@
 import { BigNumber } from 'bignumber.js';
 
-import { ValueObject } from '../value-object.types';
-import { CurrencyVO } from '../currency/currency.vo';
 import { CurrencyCode } from '../currency';
+import { CurrencyVO } from '../currency/currency.vo';
+import { ValueObject } from '../value-object.types';
 
 export class MoneyVO implements ValueObject {
   readonly value!: BigNumber;

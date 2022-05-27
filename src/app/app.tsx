@@ -1,10 +1,10 @@
 import React from 'react';
-import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
 import { Provider as PaperProvider } from 'react-native-paper';
+import { DefaultTheme, NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { useFonts } from 'expo-font';
 
 import { DashboardPage, TransactionsPage } from '@/pages';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { paths } from '@/shared/config';
 
 const Stack = createNativeStackNavigator();

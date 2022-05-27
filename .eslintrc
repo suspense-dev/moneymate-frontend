@@ -1,5 +1,5 @@
 {
-  "plugins": ["react", "@typescript-eslint", "prettier", "unused-imports"],
+  "plugins": ["react", "@typescript-eslint", "prettier", "simple-import-sort", "unused-imports"],
   "parser": "@typescript-eslint/parser",
   "extends": [
     "eslint:recommended",
@@ -61,6 +61,27 @@
     "class-methods-use-this": "off",
     "no-underscore-dangle": "off",
     "function-paren-newline": "off",
-    "no-useless-constructor": "off"
+    "no-useless-constructor": "off",
+
+    "simple-import-sort/imports": [
+      "error",
+      {
+        "groups": [
+          // Packages. `react` related packages come first.
+          [
+            "^react",
+            "^styled",
+            "^mobx",
+            "^@?\\w"
+          ],
+          [
+            "^(@/shared|@/app|@/features|@/pages|@/widgets|@/entities)(/.*|$)"
+          ],
+          [
+            "^\\u0000"
+          ],
+        ]
+      }
+    ]
   }
 }

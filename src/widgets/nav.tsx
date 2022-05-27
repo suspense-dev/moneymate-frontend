@@ -1,9 +1,10 @@
 import React from 'react';
-import { Block, Text } from '@/shared/ui';
 import styled, { css } from 'styled-components/native';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { paths } from '@/shared/config';
 import { capitalize } from 'lodash';
+
+import { paths } from '@/shared/config';
+import { Block, Text } from '@/shared/ui';
 
 type Props = {
   style?: Record<string, string>;

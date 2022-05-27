@@ -1,9 +1,9 @@
 import React from 'react';
-import styled from 'styled-components/native';
 import { TextInput } from 'react-native-paper';
+import styled from 'styled-components/native';
 
-import { Button, Modal } from '@/shared/ui';
 import { IncomeSourceModel } from '@/entities/income-source';
+import { Button, Modal } from '@/shared/ui';
 
 interface Props {
   isVisible: boolean;
@@ -19,7 +19,7 @@ export const AddIncomeModal = ({ isVisible, onClose }: Props) => {
   };
 
   return (
-    <Modal title="Put name for a new income source" isVisible={isVisible} onClose={onClose}>
+    <Modal title="Put name for a new income source" isOpened={isVisible} onClose={onClose}>
       <StyledRoot>
         <StyledTextInput label="Name" value={value} onChangeText={setValue} accessibilityTraits="" dense />
         <StyledButton onPress={handleSubmit}>Create</StyledButton>

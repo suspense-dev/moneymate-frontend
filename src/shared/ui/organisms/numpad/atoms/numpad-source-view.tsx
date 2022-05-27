@@ -1,20 +1,21 @@
 import React from 'react';
+import { TouchableWithoutFeedbackProps } from 'react-native';
 import styled from 'styled-components/native';
 
-import { Text } from '../../../atoms';
+import { Block, Text } from '../../../atoms';
 
-interface Props {
+type Props = TouchableWithoutFeedbackProps & {
   name: string;
   style?: Record<string, string>;
-}
+};
 
-export const NumpadSourceView = ({ name, style }: Props) => (
-  <StyledRoot style={style}>
+export const NumpadSourceView = ({ name, ...rest }: Props) => (
+  <StyledRoot {...rest}>
     <Text>{name}</Text>
   </StyledRoot>
 );
 
-const StyledRoot = styled.View`
+const StyledRoot = styled(Block)`
   height: 70px;
   background: #fff;
   display: flex;

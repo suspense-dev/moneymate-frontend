@@ -1,10 +1,10 @@
 import React from 'react';
 import styled from 'styled-components/native';
 
+import { MoneyVO } from '@/shared/lib';
 import { Block, Text } from '@/shared/ui';
 
-import { MoneyVO } from '@/shared/lib';
-import { TransactionType, Transaction } from '../model';
+import { Transaction, TransactionType } from '../model';
 
 type Props = {
   style?: Record<string, string>;

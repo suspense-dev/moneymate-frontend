@@ -1,9 +1,10 @@
-import { observable, action, makeObservable } from 'mobx';
+import { action, makeObservable, observable } from 'mobx';
 import { nanoid } from 'nanoid/non-secure';
 
 import { MoneyVO } from '@/shared/lib';
-import { IncomeSource } from './income-source.types';
+
 import { UserModel } from '../../user';
+import { IncomeSource } from './income-source.types';
 
 type UpdateParams = {
   id: string;

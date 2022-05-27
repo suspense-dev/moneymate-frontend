@@ -1,8 +1,9 @@
 import React from 'react';
-import styled from 'styled-components/native';
 import { GestureResponderEvent } from 'react-native';
-import { Text } from './text';
+import styled from 'styled-components/native';
+
 import { Block } from './block';
+import { Text } from './text';
 
 interface Props {
   style?: Record<string, string>;

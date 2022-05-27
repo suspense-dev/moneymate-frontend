@@ -1,6 +1,7 @@
 import { MoneyVO } from '@/shared/lib';
-import { IncomeSource } from '../../income-source';
+
 import { ExpenseSource } from '../../expense-source';
+import { IncomeSource } from '../../income-source';
 
 export enum TransactionType {
   Income = 'Income',

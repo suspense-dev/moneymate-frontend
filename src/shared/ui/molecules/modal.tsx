@@ -1,11 +1,11 @@
-import React from 'react';
-import styled from 'styled-components/native';
+import React, { ReactNode } from 'react';
 import { Portal } from 'react-native-paper';
+import styled from 'styled-components/native';
 
 import { AnimationFade, AnimationSlide, Block, Text } from '../atoms';
 
 type ModalViewProps = {
-  title: string;
+  title: ReactNode;
   style?: Record<string, string>;
   children?: React.ReactNode;
 
@@ -13,9 +13,10 @@ type ModalViewProps = {
 };
 
 type ModalProps = ModalViewProps & {
-  isVisible: boolean;
+  isOpened: boolean;
 };
 
+// TODO: использовать VirtualizedList для оптимизации
 const ModalView = ({ style, title, children, onClose }: ModalViewProps) => {
   const [isModalVisible, setModalVisible] = React.useState<boolean>(true);
 
@@ -34,8 +35,8 @@ const ModalView = ({ style, title, children, onClose }: ModalViewProps) => {
   );
 };
 
-export const Modal: React.FunctionComponent<ModalProps> = ({ isVisible, onClose, ...rest }: ModalProps) => {
-  if (!isVisible || !onClose) {
+export const Modal = ({ isOpened, onClose, ...rest }: ModalProps) => {
+  if (!isOpened || !onClose) {
     return null;
   }
   return <ModalView onClose={onClose} {...rest} />;
@@ -55,9 +56,10 @@ const StyledAnimationFade = styled(AnimationFade)`
 const StyledAnimationSlide = styled(AnimationSlide)`
   background: #fff;
   width: 70%;
+  max-height: 80%;
 `;
 
-const StyledContent = styled.View`
+const StyledContent = styled.ScrollView`
   padding: 20px;
 `;
 

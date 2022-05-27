@@ -1,6 +1,7 @@
 import { computed, makeObservable } from 'mobx';
-import { Transaction, TransactionModel } from '@/entities/transaction';
 import { addMinutes, format } from 'date-fns';
+
+import { Transaction, TransactionModel } from '@/entities/transaction';
 
 export class _TransactionsPageModel {
   constructor() {

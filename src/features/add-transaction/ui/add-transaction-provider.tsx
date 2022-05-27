@@ -1,10 +1,12 @@
 import React, { createContext, ReactNode, useCallback, useContext, useState } from 'react';
-import { Numpad, NumpadSource, NumpadSubmitParams } from '@/shared/ui';
-import { IncomeSource, IncomeSourceModel } from '@/entities/income-source';
+import styled from 'styled-components/native';
+
 import { ExpenseSource, ExpenseSourceModel } from '@/entities/expense-source';
+import { IncomeSource, IncomeSourceModel } from '@/entities/income-source';
 import { TransactionModel } from '@/entities/transaction';
-import { MoneyVO } from '@/shared/lib';
 import { UserModel } from '@/entities/user';
+import { MoneyVO } from '@/shared/lib';
+import { Numpad, NumpadSource, NumpadSubmitParams, SelectGrid, Slot } from '@/shared/ui';
 
 type Source = IncomeSource | ExpenseSource;
 
@@ -52,6 +54,22 @@ export const AddTransactionProvider = ({ children }: Props) => {
     setSourceTo(sourceTo);
     setIsNumpadVisible(true);
   }, []);
+
+  const handleSelectExpense = (expense: ExpenseSource) => {
+    setSourceTo({
+      id: expense.id,
+      name: expense.name,
+      currency: expense.balance.currency,
+    });
+  };
+
+  const handleSelectIncome = (income: IncomeSource) => {
+    setSourceFrom({
+      id: income.id,
+      name: income.name,
+      currency: income.balance.currency,
+    });
+  };
 
   const handleSumbit = ({ from, to, amount }: NumpadSubmitParams) => {
     const sourceTo = ExpenseSourceModel.get(to.id) || IncomeSourceModel.get(to.id);
@@ -105,17 +123,56 @@ export const AddTransactionProvider = ({ children }: Props) => {
   return (
     <AddTransactionContext.Provider value={init}>
       {sourceTo && (
-        <Numpad
-          isVisible={isNumpadVisible}
-          from={sourceFrom}
-          to={sourceTo}
-          amount={amount}
-          onSubmit={handleSumbit}
-          onClose={handleClose}
-          onLeave={handleLeave}
-        />
+        <SelectGrid<ExpenseSource>
+          title="Select expense source"
+          columns={2}
+          options={ExpenseSourceModel.all}
+          renderOption={(option) => (
+            <StyledCell>
+              <Slot title={option.name} balance={option.balance} />
+            </StyledCell>
+          )}
+          onSelect={handleSelectExpense}
+        >
+          {({ open: openToSelect }) => (
+            <SelectGrid<IncomeSource>
+              title="Select income source"
+              columns={2}
+              options={IncomeSourceModel.all}
+              renderOption={(option) => (
+                <StyledCell>
+                  <Slot title={option.name} balance={option.balance} />
+                </StyledCell>
+              )}
+              onSelect={handleSelectIncome}
+            >
+              {({ open: openFromSelect }) => (
+                <Numpad
+                  isVisible={isNumpadVisible}
+                  from={sourceFrom}
+                  to={sourceTo}
+                  amount={amount}
+                  onSubmit={handleSumbit}
+                  onClose={handleClose}
+                  onLeave={handleLeave}
+                  onClickFrom={openFromSelect}
+                  onClickTo={openToSelect}
+                />
+              )}
+            </SelectGrid>
+          )}
+        </SelectGrid>
       )}
       {children}
     </AddTransactionContext.Provider>
   );
 };
+
+const StyledCell = styled.View`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 10px;
+  padding: 20px 0;
+  border: 1px solid #ccc;
+`;

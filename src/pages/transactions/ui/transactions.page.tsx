@@ -1,11 +1,12 @@
 import React, { Fragment } from 'react';
+import styled, { css } from 'styled-components/native';
 import { observer } from 'mobx-react';
 
-import { RootTemplate, Text } from '@/shared/ui';
 import { TransactionView } from '@/entities/transaction';
-import { Header, Nav } from '@/widgets';
 import { UpdateTransactionProvider, useUpdateTransaction } from '@/features/update-transaction';
-import styled, { css } from 'styled-components/native';
+import { RootTemplate, Text } from '@/shared/ui';
+import { Header, Nav } from '@/widgets';
+
 import { TransactionsPageModel } from '../model';
 
 type StyledTxnViewProps = {
