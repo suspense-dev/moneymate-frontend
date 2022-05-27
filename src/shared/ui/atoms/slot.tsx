@@ -1,9 +1,10 @@
 import React from 'react';
 import styled from 'styled-components/native';
-import { GestureResponderEvent, TouchableWithoutFeedback } from 'react-native';
+import { GestureResponderEvent } from 'react-native';
 
 import { Text } from '@/shared/ui/atoms/text';
 import { MoneyVO } from '@/shared/lib';
+import { Block } from './block';
 
 interface Props {
   title: string;
@@ -16,19 +17,17 @@ interface Props {
 
 export const Slot: React.FunctionComponent<Props> = ({ title, balance, children, style, onPress }: Props) => {
   return (
-    <TouchableWithoutFeedback delayPressIn={0} onPress={onPress ? (onPress as any) : undefined}>
-      <StyledRoot style={style}>
-        <Text ellipsizeMode="tail" numberOfLines={1}>
-          {title}
-        </Text>
-        <StyledSlot>{children}</StyledSlot>
-        <StyledValue>{balance.format()}</StyledValue>
-      </StyledRoot>
-    </TouchableWithoutFeedback>
+    <StyledRoot style={style} onPress={onPress}>
+      <Text ellipsizeMode="tail" numberOfLines={1}>
+        {title}
+      </Text>
+      <StyledSlot>{children}</StyledSlot>
+      <StyledValue>{balance.format()}</StyledValue>
+    </StyledRoot>
   );
 };
 
-const StyledRoot = styled.View`
+const StyledRoot = styled(Block)`
   width: 70px;
   display: flex;
   flex-flow: column nowrap;

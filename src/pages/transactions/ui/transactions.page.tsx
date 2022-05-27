@@ -3,7 +3,7 @@ import { observer } from 'mobx-react';
 
 import { RootTemplate, Text } from '@/shared/ui';
 import { TransactionView } from '@/entities/transaction';
-import { Header } from '@/widgets';
+import { Header, Nav } from '@/widgets';
 import { UpdateTransactionProvider, useUpdateTransaction } from '@/features/update-transaction';
 import styled, { css } from 'styled-components/native';
 import { TransactionsPageModel } from '../model';
@@ -20,7 +20,7 @@ const TransactionsPageView: React.FunctionComponent = observer(() => {
   };
 
   return (
-    <RootTemplate header={<Header />}>
+    <RootTemplate header={<Header />} nav={<Nav />}>
       {Object.entries(TransactionsPageModel.txnsGroupedByDate).map(([date, txns]) => (
         <Fragment key={date}>
           <StyledDate>{date}</StyledDate>

@@ -1,8 +1,7 @@
 import React from 'react';
 import styled from 'styled-components/native';
-import { TouchableWithoutFeedback } from 'react-native';
 
-import { Text } from '@/shared/ui';
+import { Block, Text } from '@/shared/ui';
 
 import { MoneyVO } from '@/shared/lib';
 import { TransactionType, Transaction } from '../model';
@@ -30,24 +29,22 @@ export const TransactionView = ({
 
   onPress,
 }: Props) => (
-  <TouchableWithoutFeedback onPress={onPress ? () => onPress() : undefined}>
-    <StyledRoot style={style}>
-      <StyledSources>
-        {from && <StyledFrom>From: {from}</StyledFrom>}
-        <Text>To: {to}</Text>
-      </StyledSources>
-      <StyledTotal>
-        <StyledAmount type={type}>
-          {type === TransactionType.Expense ? '-' : '+'}&nbsp;
-          {amount.value.toString()}&nbsp;
-          {amount.currency.sign}
-        </StyledAmount>
-      </StyledTotal>
-    </StyledRoot>
-  </TouchableWithoutFeedback>
+  <StyledRoot style={style} onPress={onPress}>
+    <StyledSources>
+      {from && <StyledFrom>From: {from}</StyledFrom>}
+      <Text>To: {to}</Text>
+    </StyledSources>
+    <StyledTotal>
+      <StyledAmount type={type}>
+        {type === TransactionType.Expense ? '-' : '+'}&nbsp;
+        {amount.value.toString()}&nbsp;
+        {amount.currency.sign}
+      </StyledAmount>
+    </StyledTotal>
+  </StyledRoot>
 );
 
-const StyledRoot = styled.View`
+const StyledRoot = styled(Block)`
   padding: 10px 15px;
   display: flex;
   flex-flow: row nowrap;

@@ -1,9 +1,8 @@
 import React from 'react';
 import styled from 'styled-components/native';
-import { TouchableWithoutFeedback } from 'react-native';
 import { Portal } from 'react-native-paper';
 
-import { AnimationFade, AnimationSlide, Text } from '../atoms';
+import { AnimationFade, AnimationSlide, Block, Text } from '../atoms';
 
 type ModalViewProps = {
   title: string;
@@ -23,9 +22,7 @@ const ModalView = ({ style, title, children, onClose }: ModalViewProps) => {
   return (
     <Portal>
       <StyledAnimationFade style={style} isVisible={isModalVisible} onLeave={onClose}>
-        <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
-          <StyledBackground />
-        </TouchableWithoutFeedback>
+        <StyledBackground onPress={() => setModalVisible(false)} />
         <StyledAnimationSlide isVisible={isModalVisible} movement="toTop">
           <StyledHeader>
             <StyledTitle>{title}</StyledTitle>
@@ -74,7 +71,7 @@ const StyledTitle = styled(Text)`
   font-size: 16px;
 `;
 
-const StyledBackground = styled.View`
+const StyledBackground = styled(Block)`
   background: rgba(0, 0, 0, 0.2);
   position: absolute;
   top: 0;

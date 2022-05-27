@@ -1,8 +1,7 @@
 import React from 'react';
 import styled, { css } from 'styled-components/native';
-import { TouchableWithoutFeedback } from 'react-native';
 
-import { Text } from '../../../atoms';
+import { Block, Text } from '../../../atoms';
 
 type Props = {
   text: string | number;
@@ -28,23 +27,23 @@ export const NumpadSymbol: React.FunctionComponent<Props> = ({
   const [isPressed, setPressed] = React.useState<boolean>(false);
 
   return (
-    <TouchableWithoutFeedback
-      delayPressIn={0}
+    <StyledRoot
+      style={style}
+      isPressed={isPressed}
+      isDisabled={isDisabled}
       onPressIn={!isDisabled && onPress ? () => setPressed(true) : undefined}
       onPressOut={!isDisabled && onPress ? () => setPressed(false) : undefined}
       onPress={!isDisabled && onPress ? () => onPress(String(text)) : undefined}
       onLongPress={onLongPress ? () => onLongPress() : undefined}
     >
-      <StyledRoot style={style} isPressed={isPressed} isDisabled={isDisabled}>
-        <StyledTextWrapper>
-          <StyledText>{text}</StyledText>
-        </StyledTextWrapper>
-      </StyledRoot>
-    </TouchableWithoutFeedback>
+      <StyledTextWrapper>
+        <StyledText>{text}</StyledText>
+      </StyledTextWrapper>
+    </StyledRoot>
   );
 };
 
-const StyledRoot = styled.View<RootProps>`
+const StyledRoot = styled(Block)<RootProps>`
   position: relative;
   ${({ isPressed }) =>
     isPressed &&

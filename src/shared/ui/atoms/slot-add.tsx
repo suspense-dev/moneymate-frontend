@@ -1,7 +1,8 @@
 import React from 'react';
 import styled from 'styled-components/native';
-import { GestureResponderEvent, TouchableWithoutFeedback } from 'react-native';
+import { GestureResponderEvent } from 'react-native';
 import { Text } from './text';
+import { Block } from './block';
 
 interface Props {
   style?: Record<string, string>;
@@ -11,17 +12,15 @@ interface Props {
 
 export const SlotAdd: React.FunctionComponent<Props> = ({ style, onPress }: Props) => {
   return (
-    <TouchableWithoutFeedback delayPressIn={0} onPress={onPress ? (onPress as any) : undefined}>
-      <StyledRoot style={style}>
-        <StyledSlot>
-          <Text>&#43;</Text>
-        </StyledSlot>
-      </StyledRoot>
-    </TouchableWithoutFeedback>
+    <StyledRoot style={style} onPress={onPress}>
+      <StyledSlot>
+        <Text>&#43;</Text>
+      </StyledSlot>
+    </StyledRoot>
   );
 };
 
-const StyledRoot = styled.View`
+const StyledRoot = styled(Block)`
   width: 70px;
   display: flex;
   flex-flow: column nowrap;

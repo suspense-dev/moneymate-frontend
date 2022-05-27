@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import styled from 'styled-components/native';
-import { TouchableWithoutFeedback } from 'react-native';
 import { observer } from 'mobx-react';
 import { Portal } from 'react-native-paper';
 
 import { Vibration, CurrencyVO, MoneyVO } from '@/shared/lib';
-import { AnimationFade, AnimationSlide } from '../../../atoms';
+import { AnimationFade, AnimationSlide, Block } from '../../../atoms';
 import { NumpadOutput, NumpadSourceView } from '../atoms';
 import { NumpadKeys, NumpadControls } from '../molecules';
 
@@ -83,9 +82,7 @@ export const Numpad = observer(({ isVisible, from, to, amount, onSubmit, onClose
   return (
     <Portal>
       <StyledAnimationFade isVisible={isVisible} onLeave={handleLeave}>
-        <TouchableWithoutFeedback onPress={onClose}>
-          <StyledBackground />
-        </TouchableWithoutFeedback>
+        <StyledBackground onPress={onClose} />
 
         <StyledAnimatedRoot isVisible={isVisible} movement="toTop">
           <StyledSourcesWrapper>
@@ -143,7 +140,7 @@ const StyledAnimatedRoot = styled(AnimationSlide)`
   z-index: 1;
 `;
 
-const StyledBackground = styled.View`
+const StyledBackground = styled(Block)`
   background: rgba(0, 0, 0, 0.2);
   position: absolute;
   top: 0;

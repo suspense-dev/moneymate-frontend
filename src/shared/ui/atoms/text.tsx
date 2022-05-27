@@ -9,6 +9,7 @@ type Props = {
   weight?: Weight;
   ellipsizeMode?: 'head' | 'middle' | 'tail' | 'clip';
   numberOfLines?: number;
+  onPress?: () => void;
 };
 
 export const Text: React.FunctionComponent<Props> = ({ style, children, weight = 500, ...rest }: Props) => (
