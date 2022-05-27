@@ -1,13 +1,13 @@
 // import 'react-native-gesture-handler';
 import React from 'react';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
-import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import { useFonts } from 'expo-font';
 import { Provider as PaperProvider } from 'react-native-paper';
 
 import { DashboardPage, TransactionsPage } from '@/pages';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-const Tab = createMaterialBottomTabNavigator();
+const Stack = createNativeStackNavigator();
 
 export const App = () => {
   const [isFontLoaded] = useFonts({
@@ -31,16 +31,10 @@ export const App = () => {
   return (
     <PaperProvider>
       <NavigationContainer theme={customTheme}>
-        <Tab.Navigator
-          initialRouteName="Dashboard"
-          backBehavior="order"
-          barStyle={{
-            backgroundColor: '#fff',
-          }}
-        >
-          <Tab.Screen name="Dashboard" component={DashboardPage} />
-          <Tab.Screen name="Transactions" component={TransactionsPage} />
-        </Tab.Navigator>
+        <Stack.Navigator initialRouteName="Dashboard">
+          <Stack.Screen name="Dashboard" component={DashboardPage} options={{ title: 'Dashboard' }} />
+          <Stack.Screen name="Transactions" component={TransactionsPage} options={{ title: 'Transactions' }} />
+        </Stack.Navigator>
       </NavigationContainer>
     </PaperProvider>
   );
