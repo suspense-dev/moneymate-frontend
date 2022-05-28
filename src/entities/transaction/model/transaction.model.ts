@@ -1,11 +1,8 @@
 import { action, computed, makeObservable, observable } from 'mobx';
 import { nanoid } from 'nanoid/non-secure';
 
-import { Transaction, TransactionExpense, TransactionIncome, TransactionType } from './transaction.types';
-
-type AddExpensePayload = Pick<Transaction, 'from' | 'to' | 'amount'>;
-type AddIncomePayload = Pick<Transaction, 'to' | 'amount'>;
-type ChangeIncomeTxnParams = Pick<Transaction, 'id' | 'from' | 'to' | 'amount'>;
+import { TransactionEntity } from './transaction.entity';
+import { Transaction, TransactionType } from './transaction.types';
 
 class _TransactionModel {
   constructor() {
@@ -19,47 +16,53 @@ class _TransactionModel {
     });
   }
 
-  expense: TransactionExpense[] = [];
-  income: TransactionIncome[] = [];
+  expense: TransactionEntity[] = [];
+  income: TransactionEntity[] = [];
 
-  get all(): Transaction[] {
-    return [...this.expense, ...this.income].sort(
-      (a: Transaction, b: Transaction) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-    );
+  get all(): TransactionEntity[] {
+    return this.expense
+      .concat(this.income)
+      .sort(
+        (a: TransactionEntity, b: TransactionEntity) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+      );
   }
 
-  addExpense = ({ from, to, amount }: AddExpensePayload): void => {
-    this.expense.push({
-      id: nanoid(),
-      createdAt: new Date().getTime(),
-      from,
-      to,
-      amount,
-      type: TransactionType.Expense,
-    });
+  addExpense = ({ from, to, amount }: Pick<Transaction, 'from' | 'to' | 'amount'>): void => {
+    this.expense.push(
+      new TransactionEntity({
+        id: nanoid(),
+        createdAt: new Date().getTime(),
+        from,
+        to,
+        amount,
+        type: TransactionType.Expense,
+      }),
+    );
   };
 
-  addIncome = ({ to, amount }: AddIncomePayload): void => {
-    this.income.push({
-      id: nanoid(),
-      createdAt: new Date().getTime(),
-      to,
-      amount,
-      type: TransactionType.Income,
-    });
+  addIncome = ({ from, to, amount }: Pick<Transaction, 'from' | 'to' | 'amount'>): void => {
+    this.income.push(
+      new TransactionEntity({
+        id: nanoid(),
+        createdAt: new Date().getTime(),
+        from,
+        to,
+        amount,
+        type: TransactionType.Income,
+      }),
+    );
   };
 
-  update = ({ id, from, to, amount }: ChangeIncomeTxnParams): void => {
+  update = ({ id, ...props }: Partial<Pick<Transaction, 'from' | 'to' | 'amount'>> & { id: string }): void => {
     const targetTxn = this.all.find((txn) => txn.id === id);
 
     if (targetTxn) {
-      targetTxn.from = from;
-      targetTxn.to = to;
-      targetTxn.amount = amount;
+      targetTxn.update(props);
     }
   };
 
-  get = (id: string): Transaction | undefined =>
+  get = (id: string): TransactionEntity | undefined =>
     this.expense.find((expense) => expense.id === id) || this.income.find((income) => income.id === id);
 }
 

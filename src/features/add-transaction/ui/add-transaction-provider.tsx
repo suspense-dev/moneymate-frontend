@@ -1,16 +1,22 @@
 import React, { createContext, ReactNode, useCallback, useContext, useState } from 'react';
 import styled from 'styled-components/native';
+import { observer } from 'mobx-react';
 
-import { ExpenseSource, ExpenseSourceModel } from '@/entities/expense-source';
-import { IncomeSource, IncomeSourceModel } from '@/entities/income-source';
-import { TransactionModel } from '@/entities/transaction';
+import { ExpenseSourceEntity, ExpenseSourceModel } from '@/entities/expense-source';
+import { IncomeSourceEntity, IncomeSourceModel } from '@/entities/income-source';
+import { MoneySourceEntity, MoneySourceModel } from '@/entities/money-source';
 import { UserModel } from '@/entities/user';
 import { MoneyVO } from '@/shared/lib';
 import { Numpad, NumpadSource, NumpadSubmitParams, SelectGrid, Slot } from '@/shared/ui';
 
-type Source = IncomeSource | ExpenseSource;
+import { AddTransactionModel, TargetType } from '../model';
 
-type AddTransactionFunction = (params: { from?: Source; to: Source }) => void;
+type FromSource = IncomeSourceEntity;
+type ToSource = ExpenseSourceEntity | MoneySourceEntity;
+type AddTransactionFunction = (params: { from: FromSource; to: ToSource }) => void;
+type Props = {
+  children: ReactNode;
+};
 
 export const AddTransactionContext = createContext<AddTransactionFunction | null>(null);
 
@@ -26,89 +32,47 @@ export const useAddTransaction = (): AddTransactionFunction => {
   };
 };
 
-type Props = {
-  children: ReactNode;
-};
-
-export const AddTransactionProvider = ({ children }: Props) => {
+export const AddTransactionProvider = observer(({ children }: Props) => {
   const [isNumpadVisible, setIsNumpadVisible] = useState(false);
-  const [sourceFrom, setSourceFrom] = useState<NumpadSource>();
-  const [sourceTo, setSourceTo] = useState<NumpadSource>();
-  const [amount] = useState<MoneyVO>(MoneyVO.fromZero(UserModel.defaultCurrency.code));
+  const isTargetTypeExpense = AddTransactionModel.targetType === TargetType.Expense;
 
   const init = useCallback<AddTransactionFunction>(({ from, to }) => {
+    const sourceFrom: NumpadSource = {
+      id: from.id,
+      name: from.name,
+      currency: from.balance.currency,
+    };
     const sourceTo: NumpadSource = {
       id: to.id,
       name: to.name,
       currency: to.balance.currency,
     };
 
-    if (from) {
-      setSourceFrom({
-        id: from.id,
-        name: from.name,
-        currency: from.balance.currency,
-      });
-    }
-
-    setSourceTo(sourceTo);
+    AddTransactionModel.setSelectedFromSource(sourceFrom);
+    AddTransactionModel.setSelectedToSource(sourceTo);
+    AddTransactionModel.setTargetType(to instanceof ExpenseSourceEntity ? TargetType.Expense : TargetType.Money);
     setIsNumpadVisible(true);
   }, []);
 
-  const handleSelectExpense = (expense: ExpenseSource) => {
-    setSourceTo({
-      id: expense.id,
-      name: expense.name,
-      currency: expense.balance.currency,
+  const handleSelectFrom = (source: FromSource) => {
+    AddTransactionModel.setSelectedFromSource({
+      id: source.id,
+      name: source.name,
+      currency: source.balance.currency,
     });
   };
 
-  const handleSelectIncome = (income: IncomeSource) => {
-    setSourceFrom({
-      id: income.id,
-      name: income.name,
-      currency: income.balance.currency,
+  const handleSelectTo = (source: ToSource) => {
+    AddTransactionModel.setSelectedToSource({
+      id: source.id,
+      name: source.name,
+      currency: source.balance.currency,
     });
   };
 
-  const handleSumbit = ({ from, to, amount }: NumpadSubmitParams) => {
-    const sourceTo = ExpenseSourceModel.get(to.id) || IncomeSourceModel.get(to.id);
-
-    if (sourceTo) {
-      if (!from) {
-        // income
-        TransactionModel.addIncome({
-          to: sourceTo,
-          amount,
-        });
-
-        IncomeSourceModel.update({
-          ...sourceTo,
-          balance: sourceTo.balance.plus(amount.value),
-        });
-
-        setIsNumpadVisible(false);
-      } else {
-        // expense
-        const sourceFrom = ExpenseSourceModel.get(from.id) || IncomeSourceModel.get(from.id);
-
-        if (sourceFrom) {
-          TransactionModel.addExpense({ from: sourceFrom, to: sourceTo, amount });
-
-          IncomeSourceModel.update({
-            ...sourceFrom,
-            balance: sourceFrom.balance.minus(amount.value),
-          });
-
-          ExpenseSourceModel.update({
-            id: sourceTo.id,
-            balance: sourceTo.balance.plus(amount.value),
-          });
-
-          setIsNumpadVisible(false);
-        }
-      }
-    }
+  const handleSumbit = (payload: NumpadSubmitParams) => {
+    AddTransactionModel.addTransaction(payload);
+    setIsNumpadVisible(false);
   };
 
   const handleClose = () => {
@@ -116,26 +80,25 @@ export const AddTransactionProvider = ({ children }: Props) => {
   };
 
   const handleLeave = () => {
-    setSourceFrom(undefined);
-    setSourceTo(undefined);
+    AddTransactionModel.clear();
   };
 
   return (
     <AddTransactionContext.Provider value={init}>
-      {sourceTo && (
-        <SelectGrid<ExpenseSource>
-          title="Select expense source"
+      {AddTransactionModel.selectedFromSource && AddTransactionModel.selectedToSource && (
+        <SelectGrid<ToSource>
+          title={isTargetTypeExpense ? 'Select expense source' : 'Select money source'}
           columns={2}
-          options={ExpenseSourceModel.all}
+          options={isTargetTypeExpense ? ExpenseSourceModel.all : MoneySourceModel.all}
           renderOption={(option) => (
             <StyledCell>
               <Slot title={option.name} balance={option.balance} />
             </StyledCell>
           )}
-          onSelect={handleSelectExpense}
+          onSelect={handleSelectTo}
         >
           {({ open: openToSelect }) => (
-            <SelectGrid<IncomeSource>
+            <SelectGrid<FromSource>
               title="Select income source"
               columns={2}
               options={IncomeSourceModel.all}
@@ -144,14 +107,14 @@ export const AddTransactionProvider = ({ children }: Props) => {
                   <Slot title={option.name} balance={option.balance} />
                 </StyledCell>
               )}
-              onSelect={handleSelectIncome}
+              onSelect={handleSelectFrom}
             >
               {({ open: openFromSelect }) => (
                 <Numpad
                   isVisible={isNumpadVisible}
-                  from={sourceFrom}
-                  to={sourceTo}
-                  amount={amount}
+                  from={AddTransactionModel.selectedFromSource as NumpadSource}
+                  to={AddTransactionModel.selectedToSource as NumpadSource}
+                  amount={MoneyVO.fromZero(UserModel.defaultCurrency.code)}
                   onSubmit={handleSumbit}
                   onClose={handleClose}
                   onLeave={handleLeave}
@@ -166,7 +129,7 @@ export const AddTransactionProvider = ({ children }: Props) => {
       {children}
     </AddTransactionContext.Provider>
   );
-};
+});
 
 const StyledCell = styled.View`
   display: flex;

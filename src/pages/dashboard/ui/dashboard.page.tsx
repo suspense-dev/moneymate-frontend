@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import styled from 'styled-components/native';
 import { observer } from 'mobx-react';
 
-import { ExpenseSource, ExpenseSourceModel } from '@/entities/expense-source';
-import { IncomeSource, IncomeSourceModel } from '@/entities/income-source';
+import { ExpenseSourceEntity, ExpenseSourceModel } from '@/entities/expense-source';
+import { IncomeSourceEntity, IncomeSourceModel } from '@/entities/income-source';
+import { MoneySourceModel } from '@/entities/money-source';
 import { AddExpenseModal } from '@/features/add-expense-source';
 import { AddIncomeModal } from '@/features/add-income-source';
 import { AddTransactionProvider, useAddTransaction } from '@/features/add-transaction';
@@ -15,15 +16,18 @@ const DashboardPageView = observer(() => {
   const [isAddExpenseSourceModalVisible, setIsAddExpenseSourceModalVisible] = useState(false);
   const addTransaction = useAddTransaction();
 
-  const handlePressIncome = (incomeSource: IncomeSource) => {
-    if (incomeSource) {
+  const handlePressIncome = (from: IncomeSourceEntity) => {
+    const defaultMoneySource = MoneySourceModel.getDefault();
+
+    if (defaultMoneySource) {
       addTransaction({
-        to: incomeSource,
+        from,
+        to: defaultMoneySource,
       });
     }
   };
 
-  const handlePressExpense = (expenseSource: ExpenseSource) => {
+  const handlePressExpense = (expenseSource: ExpenseSourceEntity) => {
     const incomeSource = IncomeSourceModel.getDefault();
 
     if (incomeSource) {

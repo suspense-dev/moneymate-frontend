@@ -5,6 +5,5 @@ export type IncomeSource = {
   name: string;
   isDefault: boolean;
   balance: MoneyVO;
-  type: 'income';
   color?: string;
 };

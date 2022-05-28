@@ -1,7 +1,8 @@
 import { MoneyVO } from '@/shared/lib';
 
-import { ExpenseSource } from '../../expense-source';
-import { IncomeSource } from '../../income-source';
+import { ExpenseSourceEntity } from '../../expense-source';
+import { IncomeSourceEntity } from '../../income-source';
+import { MoneySourceEntity } from '../../money-source';
 
 export enum TransactionType {
   Income = 'Income',
@@ -10,8 +11,8 @@ export enum TransactionType {
 
 export type Transaction = {
   id: string;
-  from?: IncomeSource | ExpenseSource;
-  to: IncomeSource | ExpenseSource;
+  from: IncomeSourceEntity | ExpenseSourceEntity;
+  to: ExpenseSourceEntity | MoneySourceEntity;
   type: TransactionType;
   amount: MoneyVO;
   createdAt: number;

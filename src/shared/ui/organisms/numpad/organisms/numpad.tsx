@@ -16,14 +16,14 @@ export type NumpadSource = {
 };
 
 export type NumpadSubmitParams = {
-  from?: NumpadSource;
+  from: NumpadSource;
   to: NumpadSource;
   amount: MoneyVO;
 };
 
 type Props = {
   isVisible: boolean;
-  from?: NumpadSource;
+  from: NumpadSource;
   to: NumpadSource;
   amount: MoneyVO;
 
