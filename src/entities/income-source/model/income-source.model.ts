@@ -28,7 +28,8 @@ class _IncomeSourceModel {
       all: observable,
       create: action,
       remove: action,
-      update: action,
+      get: action,
+      getDefault: action,
     });
   }
 
@@ -47,14 +48,6 @@ class _IncomeSourceModel {
 
   remove = (id: string): void => {
     this.all = this.all.filter((source: IncomeSource) => source.id !== id);
-  };
-
-  update = ({ id, ...props }: Partial<Omit<IncomeSource, 'isDefault'>> & { id: string }): void => {
-    const source = this.get(id);
-
-    if (source) {
-      source.update(props);
-    }
   };
 
   get = (id: string): IncomeSourceEntity | undefined => this.all.find((source) => source.id === id);

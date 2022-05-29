@@ -5,7 +5,6 @@ import { MoneySourceEntity } from '@/entities/money-source/model/money-source.en
 import { MoneyVO } from '@/shared/lib';
 
 import { UserModel } from '../../user';
-import { MoneySource } from './money-source.types';
 
 type UpdateParams = {
   id: string;
@@ -39,7 +38,8 @@ class _MoneySourceModel {
     makeObservable(this, {
       all: observable,
       create: action,
-      update: action,
+      get: action,
+      getDefault: action,
     });
   }
 
@@ -54,14 +54,6 @@ class _MoneySourceModel {
         isDefault: !this.all.length,
       }),
     );
-  };
-
-  update = ({ id, ...props }: Partial<Omit<MoneySource, 'isDefault'>> & { id: string }): void => {
-    const source = this.get(id);
-
-    if (source) {
-      source.update(props);
-    }
   };
 
   get = (id: string): MoneySourceEntity | undefined => this.all.find((source) => source.id === id);

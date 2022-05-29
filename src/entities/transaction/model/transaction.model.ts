@@ -12,7 +12,7 @@ class _TransactionModel {
       all: computed,
       addExpense: action,
       addIncome: action,
-      update: action,
+      get: action,
     });
   }
 
@@ -52,14 +52,6 @@ class _TransactionModel {
         type: TransactionType.Income,
       }),
     );
-  };
-
-  update = ({ id, ...props }: Partial<Pick<Transaction, 'from' | 'to' | 'amount'>> & { id: string }): void => {
-    const targetTxn = this.all.find((txn) => txn.id === id);
-
-    if (targetTxn) {
-      targetTxn.update(props);
-    }
   };
 
   get = (id: string): TransactionEntity | undefined =>

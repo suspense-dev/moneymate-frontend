@@ -29,7 +29,8 @@ export class TransactionEntity {
       to: observable,
       amount: observable,
       type: observable,
-      createdAt: action,
+      createdAt: observable,
+      update: action,
     });
   }
 

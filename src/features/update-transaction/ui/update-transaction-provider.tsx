@@ -6,7 +6,6 @@ import { ExpenseSourceEntity, ExpenseSourceModel } from '@/entities/expense-sour
 import { IncomeSourceEntity, IncomeSourceModel } from '@/entities/income-source';
 import { MoneySourceEntity, MoneySourceModel } from '@/entities/money-source';
 import { TransactionModel } from '@/entities/transaction';
-import { UserModel } from '@/entities/user';
 import { MoneyVO } from '@/shared/lib';
 import { Numpad, NumpadSource, NumpadSubmitParams, SelectGrid, Slot } from '@/shared/ui';
 
@@ -37,7 +36,6 @@ type Props = {
 export const UpdateTransactionProvider = observer(({ children }: Props) => {
   const [isNumpadVisible, setIsNumpadVisible] = useState(false);
   const [txnId, setTxnId] = useState<string>('');
-  const [presetAmount, setPresetAmount] = useState<MoneyVO>(MoneyVO.fromZero(UserModel.defaultCurrency.code));
   const isTargetTypeExpense = UpdateTransactionModel.targetType === TargetType.Expense;
 
   const init = useCallback<UpdateTransactionFunction>((txnId) => {
@@ -62,7 +60,7 @@ export const UpdateTransactionProvider = observer(({ children }: Props) => {
       UpdateTransactionModel.setTargetType(
         txn.to instanceof ExpenseSourceEntity ? TargetType.Expense : TargetType.Money,
       );
-      setPresetAmount(txn.amount);
+      UpdateTransactionModel.setPresetAmount(txn.amount);
       setTxnId(txn.id);
       setIsNumpadVisible(true);
     }
@@ -104,47 +102,49 @@ export const UpdateTransactionProvider = observer(({ children }: Props) => {
 
   return (
     <AddTransactionContext.Provider value={init}>
-      {UpdateTransactionModel.setSelectedFromSource && UpdateTransactionModel.selectedToSource && (
-        <SelectGrid<ToSource>
-          title={isTargetTypeExpense ? 'Select expense source' : 'Select money source'}
-          columns={2}
-          options={isTargetTypeExpense ? ExpenseSourceModel.all : MoneySourceModel.all}
-          renderOption={(option) => (
-            <StyledCell>
-              <Slot title={option.name} balance={option.balance} />
-            </StyledCell>
-          )}
-          onSelect={handleSelectTo}
-        >
-          {({ open: openToSelect }) => (
-            <SelectGrid<FromSource>
-              title="Select income source"
-              columns={2}
-              options={IncomeSourceModel.all}
-              renderOption={(option) => (
-                <StyledCell>
-                  <Slot title={option.name} balance={option.balance} />
-                </StyledCell>
-              )}
-              onSelect={handleSelectFrom}
-            >
-              {({ open: openFromSelect }) => (
-                <Numpad
-                  isVisible={isNumpadVisible}
-                  from={UpdateTransactionModel.selectedFromSource as NumpadSource}
-                  to={UpdateTransactionModel.selectedToSource as NumpadSource}
-                  amount={presetAmount}
-                  onSubmit={handleSumbit}
-                  onClose={handleClose}
-                  onLeave={handleLeave}
-                  onClickFrom={openFromSelect}
-                  onClickTo={openToSelect}
-                />
-              )}
-            </SelectGrid>
-          )}
-        </SelectGrid>
-      )}
+      {UpdateTransactionModel.setSelectedFromSource &&
+        UpdateTransactionModel.selectedToSource &&
+        UpdateTransactionModel.presetAmount && (
+          <SelectGrid<ToSource>
+            title={isTargetTypeExpense ? 'Select expense source' : 'Select money source'}
+            columns={2}
+            options={isTargetTypeExpense ? ExpenseSourceModel.all : MoneySourceModel.all}
+            renderOption={(option) => (
+              <StyledCell>
+                <Slot title={option.name} balance={option.balance} />
+              </StyledCell>
+            )}
+            onSelect={handleSelectTo}
+          >
+            {({ open: openToSelect }) => (
+              <SelectGrid<FromSource>
+                title="Select income source"
+                columns={2}
+                options={IncomeSourceModel.all}
+                renderOption={(option) => (
+                  <StyledCell>
+                    <Slot title={option.name} balance={option.balance} />
+                  </StyledCell>
+                )}
+                onSelect={handleSelectFrom}
+              >
+                {({ open: openFromSelect }) => (
+                  <Numpad
+                    isVisible={isNumpadVisible}
+                    from={UpdateTransactionModel.selectedFromSource as NumpadSource}
+                    to={UpdateTransactionModel.selectedToSource as NumpadSource}
+                    amount={UpdateTransactionModel.presetAmount as MoneyVO}
+                    onSubmit={handleSumbit}
+                    onClose={handleClose}
+                    onLeave={handleLeave}
+                    onClickFrom={openFromSelect}
+                    onClickTo={openToSelect}
+                  />
+                )}
+              </SelectGrid>
+            )}
+          </SelectGrid>
+        )}
       {children}
     </AddTransactionContext.Provider>
   );

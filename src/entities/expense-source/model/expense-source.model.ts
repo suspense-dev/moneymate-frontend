@@ -31,6 +31,7 @@ class _ExpenseSourceModel {
       all: observable,
       create: action,
       remove: action,
+      get: action,
     });
   }
 
@@ -44,14 +45,6 @@ class _ExpenseSourceModel {
         balance: MoneyVO.fromZero(UserModel.defaultCurrency.code),
       }),
     );
-  };
-
-  update = ({ id, ...props }: Partial<Omit<ExpenseSource, 'isDefault'>> & { id: string }): void => {
-    const source = this.get(id);
-
-    if (source) {
-      source.update(props);
-    }
   };
 
   remove = (id: ExpenseSource['id']): void => {

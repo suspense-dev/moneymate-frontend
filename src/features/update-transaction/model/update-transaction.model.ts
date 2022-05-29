@@ -20,6 +20,7 @@ class _UpdateTransactionModel {
       selectedToSource: observable,
       initialFromSource: observable,
       initialToSource: observable,
+      presetAmount: observable,
       setTargetType: action,
       setSelectedFromSource: action,
       setSelectedToSource: action,
@@ -33,6 +34,7 @@ class _UpdateTransactionModel {
   selectedToSource: NumpadSource | undefined = undefined;
   initialFromSource: NumpadSource | undefined = undefined;
   initialToSource: NumpadSource | undefined = undefined;
+  presetAmount: MoneyVO | undefined = undefined;
 
   setTargetType = (targetType: TargetType) => {
     this.targetType = targetType;
@@ -54,6 +56,10 @@ class _UpdateTransactionModel {
     this.initialToSource = source;
   };
 
+  setPresetAmount = (amount: MoneyVO) => {
+    this.presetAmount = amount;
+  };
+
   updateTransaction = ({
     id,
     from,
@@ -70,30 +76,24 @@ class _UpdateTransactionModel {
     const sourceTo = toModel.get(to.id);
     const initialSourceFrom = this.initialFromSource ? IncomeSourceModel.get(this.initialFromSource.id) : undefined;
     const initialSourceTo = this.initialToSource ? toModel.get(this.initialToSource.id) : undefined;
+    const txn = TransactionModel.get(id);
 
-    if (sourceFrom && sourceTo && initialSourceFrom && initialSourceTo) {
-      IncomeSourceModel.update({
-        id: initialSourceFrom.id,
-        balance: initialSourceFrom.balance.minus(amount.value),
+    if (txn && sourceFrom && sourceTo && initialSourceFrom && initialSourceTo && this.presetAmount) {
+      initialSourceFrom.update({
+        balance: initialSourceFrom.balance.plus(this.presetAmount.value),
+      });
+      initialSourceTo.update({
+        balance: initialSourceTo.balance.minus(this.presetAmount.value),
       });
 
-      toModel.update({
-        id: initialSourceTo.id,
-        balance: initialSourceTo.balance.minus(amount.value),
+      sourceFrom.update({
+        balance: sourceFrom.balance.minus(amount.value),
       });
-
-      IncomeSourceModel.update({
-        id: sourceFrom.id,
-        balance: sourceFrom.balance.plus(amount.value),
-      });
-
-      toModel.update({
-        id: sourceTo.id,
+      sourceTo.update({
         balance: sourceTo.balance.plus(amount.value),
       });
 
-      TransactionModel.update({
-        id,
+      txn.update({
         from: sourceFrom,
         to: sourceTo,
         amount,
@@ -107,6 +107,7 @@ class _UpdateTransactionModel {
     this.selectedToSource = undefined;
     this.initialFromSource = undefined;
     this.initialToSource = undefined;
+    this.presetAmount = undefined;
   };
 }
 

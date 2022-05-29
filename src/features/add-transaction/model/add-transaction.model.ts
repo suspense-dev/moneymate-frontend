@@ -44,13 +44,11 @@ class _AddTransactionModel {
 
   addTransaction = ({ from, to, amount }: { from: NumpadSource; to: NumpadSource; amount: MoneyVO }) => {
     const isTargetTypeExpense = this.targetType === TargetType.Expense;
-    const toModel = isTargetTypeExpense ? ExpenseSourceModel : MoneySourceModel;
     const sourceFrom = IncomeSourceModel.get(from.id);
-    const sourceTo = ExpenseSourceModel.get(to.id) || MoneySourceModel.get(to.id);
+    const sourceTo = isTargetTypeExpense ? ExpenseSourceModel.get(to.id) : MoneySourceModel.get(to.id);
 
     if (sourceFrom && sourceTo) {
-      toModel.update({
-        id: sourceTo.id,
+      sourceTo.update({
         balance: sourceTo.balance.plus(amount.value),
       });
 
@@ -60,8 +58,7 @@ class _AddTransactionModel {
           to: sourceTo,
           amount,
         });
-        IncomeSourceModel.update({
-          id: sourceFrom.id,
+        sourceFrom.update({
           balance: sourceFrom.balance.minus(amount.value),
         });
       } else {
@@ -70,8 +67,7 @@ class _AddTransactionModel {
           to: sourceTo,
           amount,
         });
-        IncomeSourceModel.update({
-          id: sourceFrom.id,
+        sourceFrom.update({
           balance: sourceFrom.balance.plus(amount.value),
         });
       }
