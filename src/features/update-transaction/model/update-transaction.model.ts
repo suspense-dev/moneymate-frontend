@@ -1,4 +1,4 @@
-import { action, makeObservable, observable } from 'mobx';
+import { action, makeObservable } from 'mobx';
 
 import { ExpenseSourceModel } from '@/entities/expense-source';
 import { IncomeSourceModel } from '@/entities/income-source';
@@ -15,75 +15,42 @@ export enum TargetType {
 class _UpdateTransactionModel {
   constructor() {
     makeObservable(this, {
-      targetType: observable,
-      selectedFromSource: observable,
-      selectedToSource: observable,
-      initialFromSource: observable,
-      initialToSource: observable,
-      presetAmount: observable,
-      setTargetType: action,
-      setSelectedFromSource: action,
-      setSelectedToSource: action,
       updateTransaction: action,
-      clear: action,
     });
   }
-
-  targetType: TargetType | undefined = undefined;
-  selectedFromSource: NumpadSource | undefined = undefined;
-  selectedToSource: NumpadSource | undefined = undefined;
-  initialFromSource: NumpadSource | undefined = undefined;
-  initialToSource: NumpadSource | undefined = undefined;
-  presetAmount: MoneyVO | undefined = undefined;
-
-  setTargetType = (targetType: TargetType) => {
-    this.targetType = targetType;
-  };
-
-  setSelectedFromSource = (source: NumpadSource) => {
-    this.selectedFromSource = source;
-  };
-
-  setSelectedToSource = (source: NumpadSource) => {
-    this.selectedToSource = source;
-  };
-
-  setInitialFromSource = (source: NumpadSource) => {
-    this.initialFromSource = source;
-  };
-
-  setInitialToSource = (source: NumpadSource) => {
-    this.initialToSource = source;
-  };
-
-  setPresetAmount = (amount: MoneyVO) => {
-    this.presetAmount = amount;
-  };
 
   updateTransaction = ({
     id,
     from,
     to,
     amount,
+    presetAmount,
+    presetFrom,
+    presetTo,
+    targetType,
   }: {
     id: string;
     from: NumpadSource;
     to: NumpadSource;
     amount: MoneyVO;
+    presetAmount: MoneyVO;
+    presetFrom: NumpadSource;
+    presetTo: NumpadSource;
+    targetType: TargetType;
   }) => {
-    const toModel = this.targetType === TargetType.Expense ? ExpenseSourceModel : MoneySourceModel;
+    const toModel = targetType === TargetType.Expense ? ExpenseSourceModel : MoneySourceModel;
     const sourceFrom = IncomeSourceModel.get(from.id);
     const sourceTo = toModel.get(to.id);
-    const initialSourceFrom = this.initialFromSource ? IncomeSourceModel.get(this.initialFromSource.id) : undefined;
-    const initialSourceTo = this.initialToSource ? toModel.get(this.initialToSource.id) : undefined;
+    const initialSourceFrom = IncomeSourceModel.get(presetFrom.id);
+    const initialSourceTo = toModel.get(presetTo.id);
     const txn = TransactionModel.get(id);
 
-    if (txn && sourceFrom && sourceTo && initialSourceFrom && initialSourceTo && this.presetAmount) {
+    if (txn && sourceFrom && sourceTo && initialSourceFrom && initialSourceTo) {
       initialSourceFrom.update({
-        balance: initialSourceFrom.balance.plus(this.presetAmount.value),
+        balance: initialSourceFrom.balance.plus(presetAmount.value),
       });
       initialSourceTo.update({
-        balance: initialSourceTo.balance.minus(this.presetAmount.value),
+        balance: initialSourceTo.balance.minus(presetAmount.value),
       });
 
       sourceFrom.update({
@@ -99,15 +66,6 @@ class _UpdateTransactionModel {
         amount,
       });
     }
-  };
-
-  clear = () => {
-    this.targetType = undefined;
-    this.selectedFromSource = undefined;
-    this.selectedToSource = undefined;
-    this.initialFromSource = undefined;
-    this.initialToSource = undefined;
-    this.presetAmount = undefined;
   };
 }
 
