@@ -46,16 +46,26 @@ class _UpdateTransactionModel {
     const txn = TransactionModel.get(id);
 
     if (txn && sourceFrom && sourceTo && initialSourceFrom && initialSourceTo) {
-      initialSourceFrom.update({
-        balance: initialSourceFrom.balance.plus(presetAmount.value),
-      });
       initialSourceTo.update({
         balance: initialSourceTo.balance.minus(presetAmount.value),
       });
 
-      sourceFrom.update({
-        balance: sourceFrom.balance.minus(amount.value),
-      });
+      if (targetType === TargetType.Money) {
+        initialSourceFrom.update({
+          balance: initialSourceFrom.balance.minus(presetAmount.value),
+        });
+        sourceFrom.update({
+          balance: sourceFrom.balance.plus(amount.value),
+        });
+      } else {
+        initialSourceFrom.update({
+          balance: initialSourceFrom.balance.plus(presetAmount.value),
+        });
+        sourceFrom.update({
+          balance: sourceFrom.balance.minus(amount.value),
+        });
+      }
+
       sourceTo.update({
         balance: sourceTo.balance.plus(amount.value),
       });
