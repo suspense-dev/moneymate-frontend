@@ -9,11 +9,16 @@ import { TransactionModel } from '@/entities/transaction';
 import { MoneyVO } from '@/shared/lib';
 import { Numpad, NumpadSource, NumpadSubmitParams, SelectGrid, Slot } from '@/shared/ui';
 
-import { TargetType, UpdateTransactionModel } from '../model';
-
 type FromSource = IncomeSourceEntity;
 type ToSource = ExpenseSourceEntity | MoneySourceEntity;
 type UpdateTransactionFunction = (txnId: string) => void;
+export enum TargetType {
+  Expense = 'Expense',
+  Money = 'Money',
+}
+type Props = {
+  children: ReactNode;
+};
 
 export const AddTransactionContext = createContext<UpdateTransactionFunction | null>(null);
 
@@ -27,10 +32,6 @@ export const useUpdateTransaction = (): UpdateTransactionFunction => {
 
     setData(txnId);
   };
-};
-
-type Props = {
-  children: ReactNode;
 };
 
 export const UpdateTransactionProvider = observer(({ children }: Props) => {
@@ -87,18 +88,48 @@ export const UpdateTransactionProvider = observer(({ children }: Props) => {
   };
 
   const handleSumbit = ({ from, to, amount }: NumpadSubmitParams) => {
-    if (presetSourceFrom && presetSourceTo && targetType && txnId && presetAmount) {
-      UpdateTransactionModel.updateTransaction({
-        id: txnId,
-        from,
-        to,
-        presetFrom: presetSourceFrom,
-        presetTo: presetSourceTo,
-        amount,
-        presetAmount,
-        targetType,
-      });
+    if (txnId && presetSourceFrom && presetSourceTo && presetAmount) {
+      const toModel = targetType === TargetType.Expense ? ExpenseSourceModel : MoneySourceModel;
+      const sourceFrom = IncomeSourceModel.get(from.id);
+      const sourceTo = toModel.get(to.id);
+      const initialSourceFrom = IncomeSourceModel.get(presetSourceFrom.id);
+      const initialSourceTo = toModel.get(presetSourceTo.id);
+      const txn = TransactionModel.get(txnId);
+
+      if (txn && sourceFrom && sourceTo && initialSourceFrom && initialSourceTo) {
+        initialSourceTo.update({
+          balance: initialSourceTo.balance.minus(presetAmount.value),
+        });
+
+        console.log(targetType);
+        if (targetType === TargetType.Money) {
+          initialSourceFrom.update({
+            balance: initialSourceFrom.balance.minus(presetAmount.value),
+          });
+          sourceFrom.update({
+            balance: sourceFrom.balance.plus(amount.value),
+          });
+        } else {
+          initialSourceFrom.update({
+            balance: initialSourceFrom.balance.plus(presetAmount.value),
+          });
+          sourceFrom.update({
+            balance: sourceFrom.balance.minus(amount.value),
+          });
+        }
+
+        sourceTo.update({
+          balance: sourceTo.balance.plus(amount.value),
+        });
+
+        txn.update({
+          from: sourceFrom,
+          to: sourceTo,
+          amount,
+        });
+      }
     }
+
     setIsNumpadVisible(false);
   };
 
